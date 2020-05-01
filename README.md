@@ -6,6 +6,6 @@
 
 ## Options
 
-- Setup different project
-- ~~Via circleCI orb~~
-- Via Docker
+- Setup different project &#9745;
+- Via circleCI orb &#x2612;
+- Via Docker ~
