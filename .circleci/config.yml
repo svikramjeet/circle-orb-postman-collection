@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 orbs:
   newman: postman/newman@1.0.0
 jobs:
@@ -22,7 +22,8 @@ jobs:
           paths:
             - vendor
 
-  api_tests:
+  newman-collection-run-env-timeout:
+
     executor: newman/postman-newman-docker
     steps:
       - checkout
@@ -35,7 +36,7 @@ workflows:
   version: 2
   validate-and-deploy:
     jobs:
-      - api_tests
+      - newman-collection-run-env-timeout
       - build:
           requires:
-            - api_tests
+            - newman-collection-run-env-timeout
