@@ -1,4 +1,6 @@
 version: 2
+orbs:
+  newman: postman/newman@1.0.0
 jobs:
   build:
     working_directory: ~/brewbroker-api
@@ -19,17 +21,15 @@ jobs:
           key: composer-v1-{{ checksum "composer.lock" }}
           paths:
             - vendor
-  
+
   api_tests:
-    docker:
-      - image: circleci/node:10-browsers
+    executor: newman/postman-newman-docker
     steps:
-      - run:
-          name: Install newman
-          command: sudo npm install -g newman
-      - run:
-          name: API Tests
-          command: newman run resources/postman-collection/API-v1-qa.postman_collection.json -e resources/postman-collection/UAT.postman_environment.json
+      - checkout
+      - newman/newman-run:
+          collection: https://api.getpostman.com/collections/${POSTMAN_COLLECTION_ID}?apikey=${POSTMAN_API_KEY}
+          environment: https://api.getpostman.com/environments/${POSTMAN_ENV_ID}?apikey=${POSTMAN_API_KEY}
+          timeout: '5000'
 
 workflows:
   version: 2
