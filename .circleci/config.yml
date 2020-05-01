@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/brewbroker-api
+    docker:
+      - image: svikramjeet/php7.3
+      - image: postgres:9.6.2
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1-
+      - run: 
+          name: Install Composer
+          command: |
+            composer install -n --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+  
+  api_tests:
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      - run:
+          name: Install newman
+          command: sudo npm install -g newman
+      - run:
+          name: API Tests
+          command: newman run resources/postman-collection/API-v1-qa.postman_collection.json -e resources/postman-collection/UAT.postman_environment.json
+
+workflows:
+  version: 2
+  validate-and-deploy:
+    jobs:
+      - api_tests
+      - build:
+          requires:
+            - api_tests
