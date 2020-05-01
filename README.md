@@ -7,5 +7,5 @@
 ## Options
 
 - Setup different project
+- ~~Via circleCI orb
 - Via Docker
-- Via circleCI orb
