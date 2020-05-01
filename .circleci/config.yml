@@ -2,28 +2,7 @@ version: 2.1
 orbs:
   newman: postman/newman@1.0.0
 jobs:
-  build:
-    working_directory: ~/brewbroker-api
-    docker:
-      - image: svikramjeet/php7.3
-      - image: postgres:9.6.2
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - composer-v1-{{ checksum "composer.lock" }}
-            - composer-v1-
-      - run: 
-          name: Install Composer
-          command: |
-            composer install -n --prefer-dist
-      - save_cache:
-          key: composer-v1-{{ checksum "composer.lock" }}
-          paths:
-            - vendor
-
   newman-collection-run-env-timeout:
-
     executor: newman/postman-newman-docker
     steps:
       - checkout
@@ -31,12 +10,3 @@ jobs:
           collection: https://api.getpostman.com/collections/${POSTMAN_COLLECTION_ID}?apikey=${POSTMAN_API_KEY}
           environment: https://api.getpostman.com/environments/${POSTMAN_ENV_ID}?apikey=${POSTMAN_API_KEY}
           timeout: '5000'
-
-workflows:
-  version: 2
-  validate-and-deploy:
-    jobs:
-      - newman-collection-run-env-timeout
-      - build:
-          requires:
-            - newman-collection-run-env-timeout
